@@ -22,8 +22,6 @@ export const isUserLoggedIn = async (req: any, res: any, next: any) => {
     ) as JwtPayload;
 
     const isUserExist = await User.findById(user.id);
-
-    console.log(isUserExist);
     
 
     if (isUserExist) {

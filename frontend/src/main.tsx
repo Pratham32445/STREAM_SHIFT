@@ -11,6 +11,8 @@ import Process from "./components/Process";
 import Allvideos from "./components/Allvideos";
 import SingleVideo from "./utils/SingleVideo";
 import Home from "./components/Home.js";
+import Admin from "./components/Admin.js";
+import Login from "./components/Login.js";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +32,10 @@ const router = createBrowserRouter([
         element: <Register />,
       },
       {
+        path : "login",
+        element : <Login/>
+      },
+      {
         path: "/process",
         element: <Process />,
       },
@@ -41,6 +47,10 @@ const router = createBrowserRouter([
         path: "/video/:VideoId",
         element: <SingleVideo />,
       },
+      {
+        path : "/Admin/Queries",
+        element : <Admin/>
+      }
     ],
   },
 ]);

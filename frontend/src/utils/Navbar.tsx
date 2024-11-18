@@ -1,6 +1,6 @@
 import React from "react";
 import { ModeToggle } from "@/components/mode-toogle";
-import { Link, redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const data = [
   {
@@ -27,7 +27,7 @@ const data = [
 
 const Navbar = () => {
   return (
-    <div className="flex justify-between items-center p-5 absolute w-full top-0">
+    <div className="flex justify-between items-center p-5">
       <div className="flex gap-14">
         {data.map(({ link, redirect, key }) => (
           <div key={key} className="flex gap-2 items-center">

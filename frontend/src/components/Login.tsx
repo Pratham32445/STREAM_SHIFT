@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MainContext } from "@/context/State";
 
-const Register = () => {
+const Login = () => {
   const [email, setEmail] = useState<string | null>("");
   const [password, setPassword] = useState<string | null>("");
   const [Loading, setLoading] = useState(false);
@@ -35,8 +35,8 @@ const Register = () => {
     setLoading(false);
   }, []);
 
-  const registerUser = async () => {
-    const data = await fetch(`${BACKEND_URL}/user/register`, {
+  const loginUser = async () => {
+    const data = await fetch(`${BACKEND_URL}/user/login`, {
       body: JSON.stringify({ email, password }),
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const Register = () => {
       <div className="h-full flex justify-center mt-[100px]">
         <div className="w-[400px] px-6 py-4">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            Create an account
+            Login
           </h3>
           <Input
             type="email"
@@ -72,10 +72,13 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <p className="leading-7 [&:not(:first-child)]:mt-6">
-            Already have an account ? <Link to={"/login"} className="underline">Login</Link>
+            Create New Account ?{" "}
+            <Link to={"/register"} className="underline">
+              Register
+            </Link>
           </p>
-          <Button onClick={registerUser} className="w-full my-5">
-            Register
+          <Button onClick={loginUser} className="w-full my-5">
+            Login
           </Button>
           <Toaster position="top-center" reverseOrder={false} />
         </div>
@@ -84,4 +87,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

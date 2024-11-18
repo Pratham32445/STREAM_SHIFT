@@ -1,8 +1,10 @@
-import express from "express";
+import express, { Request, Response } from "express";
 
 import { User } from "../models/User.model";
 
 import jwt from "jsonwebtoken";
+import { Query } from "../models/Query.middleware";
+import { isUserLoggedIn } from "../middlewares/authenticate.middlewares";
 
 const app = express();
 
@@ -10,11 +12,8 @@ app.use(express.json());
 
 export const router = express.Router();
 
-
-
 router.post("/register", async (req, res) => {
-
-    const {email,password} = req.body;
+  const { email, password } = req.body;
 
   if (!email || !password)
     return res.json({
@@ -36,7 +35,6 @@ router.post("/register", async (req, res) => {
   });
 
   if (newUser) {
-
     await newUser.save();
 
     const token = jwt.sign(
@@ -47,14 +45,14 @@ router.post("/register", async (req, res) => {
     res.cookie("userToken", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite : "none",
-      secure : false
+      sameSite: "none",
+      secure: false,
     });
 
     return res.json({
       success: true,
       User: newUser,
-      token
+      token,
     });
   }
 
@@ -63,8 +61,8 @@ router.post("/register", async (req, res) => {
     message: "Some error occured",
   });
 });
- 
-router.get("/login", async (req, res) => {
+
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password)
@@ -73,15 +71,21 @@ router.get("/login", async (req, res) => {
       message: "please provide all the field",
     });
 
-  const UserExist = await User.findOne({ email });
+  const isUser = await User.findOne({ email });
 
-  if (UserExist) {
-    const passwordExist = UserExist.password == password;
+  if (isUser) {
+    const passwordExist = isUser.password == password;
 
     if (passwordExist) {
+      const token = jwt.sign(
+        { id: isUser.id, email: isUser.email, password: isUser.password },
+        process.env.JWT_SECRET || ""
+      );
+
       return res.json({
         success: true,
-        User: UserExist,
+        isUser,
+        token,
       });
     } else {
       return res.json({
@@ -95,4 +99,32 @@ router.get("/login", async (req, res) => {
       message: "Invalid credentials",
     });
   }
-}); 
+});
+
+router.post("/addQuery", async (req: Request, res: Response) => {
+  const { email, query } = req.body;
+  console.log(email, query);
+  if (email && query) {
+    const result = await Query.create({
+      email,
+      query,
+    });
+    await result.save();
+  }
+  res.send("done");
+});
+
+router.get("/getQuery", isUserLoggedIn, async (req: Request, res: Response) => {
+  // @ts-ignore
+  const adminId = req.user.id;
+  if (adminId == process.env.ADMIN_ID!) {
+    const results = await Query.find();
+    return res.send(results);
+  }
+  res.status(401).send("Not allowed");
+});
+
+router.get("/getUsersCount", async (req: Request, res: Response) => {
+  const results = await User.find();
+  return res.json({ users: results.length });
+});
