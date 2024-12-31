@@ -23,11 +23,13 @@ const corsOptions = {
     "http://ec2-43-205-127-243.ap-south-1.compute.amazonaws.com:5173",
     "http://transcoder.code10x.online",
     "https://transcoder.code10x.online",
+    "http://localhost:5173",
+    "http://stream-shift.code10x.online"
   ],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -62,7 +64,7 @@ const ecsclient = new ECSClient({
 
 const config = {
   CLUSTER: "arn:aws:ecs:ap-south-1:211125556897:cluster/transcode",
-  TASK: "arn:aws:ecs:ap-south-1:211125556897:task-definition/video-transcode:1",
+  TASK: "arn:aws:ecs:ap-south-1:211125556897:task-definition/transcoder-task:1",
 };
 
 // (async () => {
@@ -129,17 +131,17 @@ app.post(
             awsvpcConfiguration: {
               assignPublicIp: "ENABLED",
               subnets: [
-                "subnet-0c3c8ac43f6e053db",
-                "subnet-0b5afeea9a98155de",
-                "subnet-06e2e7eeb5a9c3513",
+                "subnet-087387af006d3cb6f",
+                "subnet-00e04165dbb294deb",
+                "subnet-0c5f8ac4c379c884a",
               ],
-              securityGroups: ["sg-054376a96279e2a5d"],
+              securityGroups: ["sg-0f32dbaf11c793f84"],
             },
           },
           overrides: {
             containerOverrides: [
               {
-                name: "transcode-video",
+                name: "builder-image",
                 environment: [
                   { name: "KEY", value: key },
                   { name: "VIDEO_LINK", value: url },
